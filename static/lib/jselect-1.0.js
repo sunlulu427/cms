@@ -14,38 +14,38 @@
  *
  * 日期：2012-11-07 15:38
  */
-(function(squid) {
+(function (squid) {
     function JSelect() {
         this.init()
-    } 
+    }
 
     JSelect.prototype = {
         constructor: JSelect,
-        init: function(context) {
+        init: function (context) {
             //获取指定上下文所有select元素
             var elems = squid.getElementsByTagName('select', context)
             this.globalEvent()
             this.initView(elems)
         },
-        initView: function(elems) {
+        initView: function (elems) {
             var i = 0,
                 elem,
                 length = elems.length,
                 enabled;
 
-            for(; i < length; i++) {
+            for (; i < length; i++) {
                 elem = elems[i]
                 enabled = elem.getAttribute('data-enabled')
                 //使用系统select
-                if(!enabled || enabled === 'true')
+                if (!enabled || enabled === 'true')
                     continue
-                if(squid.isVisible(elem))
+                if (squid.isVisible(elem))
                     elem.style.display = 'none'
-                
+
                 this.create(elem)
             }
         },
-        create: function(elem) {
+        create: function (elem) {
             var data = [],
                 i = 0,
                 length,
@@ -65,23 +65,23 @@
                 position,
                 left,
                 top,
-                cssText; 
+                cssText;
 
-            options = elem.getElementsByTagName('option') 
+            options = elem.getElementsByTagName('option')
             length = options.length
-            for(; i < length; i++) {
+            for (; i < length; i++) {
                 option = options[i]
                 value = option.value
                 text = option.innerText || option.textContent
-                
+
                 obj = {
-                    value: value, 
+                    value: value,
                     text: text
                 }
-                if(option.selected) {
-                   selectedValue = value
-                   selectedText = text  
-                   obj['selected'] = true 
+                if (option.selected) {
+                    selectedValue = value
+                    selectedText = text
+                    obj['selected'] = true
                 }
                 data.push(obj)
             }
@@ -100,11 +100,11 @@
             _default.setAttribute('tabindex', '1')
             _default.setAttribute('data-value', selectedValue)
             _default.setAttribute('hidefocus', true)
-            _default.innerHTML = selectedText 
-            div.appendChild(_default) 
+            _default.innerHTML = selectedText
+            div.appendChild(_default)
             //选择icon
             icon = document.createElement('i')
-            icon.className = 'select-icon' 
+            icon.className = 'select-icon'
             div.appendChild(icon)
             //下拉列表
             wrapper = document.createElement('span')
@@ -126,7 +126,7 @@
             cssText = ' display: inline-block;'
             div.style.cssText = cssText
         },
-        globalEvent: function() {
+        globalEvent: function () {
             //document 添加click事件，用户处理每个jselect元素展开关闭
             var target,
                 className,
@@ -136,57 +136,57 @@
                 that = this;
 
 
-            squid.on(document, 'click', function(event) {
-                target = event.target, 
-                className = target.className;
+            squid.on(document, 'click', function (event) {
+                target = event.target,
+                    className = target.className;
 
-                switch(className) {
+                switch (className) {
                     case 'select-icon':
                     case 'select-default unselectable':
                         elem = target.tagName.toLowerCase() === 'span' ? target : target.previousSibling
                         wrapper = elem.nextSibling.nextSibling
-                         
+
                         //firefox 鼠标右键会触发click事件
                         //鼠标左键点击执行
-                        if(event.button === 0) {
+                        if (event.button === 0) {
                             //初始化选中元素
                             that.initSelected(elem)
-                            if(squid.isHidden(wrapper)) {
+                            if (squid.isHidden(wrapper)) {
                                 status = 'inline-block'
                                 //关闭所有展开jselect
-                                that.closeSelect() 
-                            }else{
-                                status = 'none' 
+                                that.closeSelect()
+                            } else {
+                                status = 'none'
                             }
-                            wrapper.style.display = status 
-                            elem.focus() 
-                        }else if(event.button === 2){
-                            wrapper.style.display = 'none' 
+                            wrapper.style.display = status
+                            elem.focus()
+                        } else if (event.button === 2) {
+                            wrapper.style.display = 'none'
                         }
                         that.zIndex(wrapper)
                         break
                     case 'select-option':
                     case 'select-option selected':
-                        if(event.button === 0) {
+                        if (event.button === 0) {
                             that.fireSelected(target, target.parentNode.parentNode.previousSibling.previousSibling)
-                            wrapper.style.display = 'none' 
+                            wrapper.style.display = 'none'
                         }
                         break
                     default:
-                        while(target && target.nodeType !== 9) {
-                            if(target.nodeType === 1) {
-                                if(target.className === 'select-wrapper') {
+                        while (target && target.nodeType !== 9) {
+                            if (target.nodeType === 1) {
+                                if (target.className === 'select-wrapper') {
                                     return
-                                } 
+                                }
                             }
                             target = target.parentNode
                         }
                         that.closeSelect()
                         break
-                } 
+                }
             })
         },
-        sysEvent: function(elem) {
+        sysEvent: function (elem) {
             var stand = elem.firstChild,
                 dropdown = elem.lastChild,
                 target,
@@ -195,75 +195,75 @@
                 keyup = chrome ? 'keypress' : 'keyup',
                 that = this;
 
-            squid.on(elem, 'mouseover', function(event) {
-                if(!that.doScrolling) {
+            squid.on(elem, 'mouseover', function (event) {
+                if (!that.doScrolling) {
                     target = event.target
-                    that.activate(target)  
+                    that.activate(target)
                 }
             })
 
-            squid.on(elem, 'mouseout', function(event) {
-                if(!that.doScrolling) {
-                    target = event.target 
+            squid.on(elem, 'mouseout', function (event) {
+                if (!that.doScrolling) {
+                    target = event.target
                     that.deactivate(target)
                 }
             })
 
-            squid.on(stand, 'keydown', function(event) {
-               var keyCode = event.keyCode;
+            squid.on(stand, 'keydown', function (event) {
+                var keyCode = event.keyCode;
 
-               switch(keyCode) {
-                   //回车选中
-                   case 13:
-                        that.enter(dropdown) 
+                switch (keyCode) {
+                    //回车选中
+                    case 13:
+                        that.enter(dropdown)
                         break
-                   //向上键
-                   case 38:
-                       that.doScrolling = true
-                       that.up(dropdown) 
-                       break
-                   //向下键
-                   case 40:
-                       that.doScrolling = true
-                       that.down(dropdown) 
-                       break
-                   default:
-                       break
-               } 
+                    //向上键
+                    case 38:
+                        that.doScrolling = true
+                        that.up(dropdown)
+                        break
+                    //向下键
+                    case 40:
+                        that.doScrolling = true
+                        that.down(dropdown)
+                        break
+                    default:
+                        break
+                }
             })
 
-            squid.on(stand, keyup, function(event) {
-               var keyCode = event.keyCode;
+            squid.on(stand, keyup, function (event) {
+                var keyCode = event.keyCode;
 
-               switch(keyCode) {
-                   //回车选中
-                   case 13:
+                switch (keyCode) {
+                    //回车选中
+                    case 13:
                         that.doScrolling = false
                         break
-                   //向上键
-                   case 38:
+                    //向上键
+                    case 38:
                         that.doScrolling = false
                         break
-                   //向下键
-                   case 40:
-                       that.doScrolling = false
-                       break
-                   default:
-                       break
-               }  
+                    //向下键
+                    case 40:
+                        that.doScrolling = false
+                        break
+                    default:
+                        break
+                }
             })
         },
-        zIndex: function(elem) {
+        zIndex: function (elem) {
             var index = 10,
                 cur = elem.parentNode.parentNode,
                 next = squid.next(cur);
-            
-            if(next) {
+
+            if (next) {
                 cur.style.zIndex = index
                 next.style.zIndex = --index
             }
         },
-        initSelected: function(elem) {
+        initSelected: function (elem) {
             var curText = elem.innerText || elem.textContent,
                 curValue = elem.getAttribute('data-value'),
                 wrapper = elem.nextSibling.nextSibling,
@@ -275,59 +275,59 @@
                 max,
                 hidden = false;
 
-            for(; n; n = n.nextSibling) {
-                text = n.innerText || n.textContent 
+            for (; n; n = n.nextSibling) {
+                text = n.innerText || n.textContent
                 value = n.getAttribute('data-value')
-                if(curText === text && curValue === value) {
+                if (curText === text && curValue === value) {
                     //显示已选中元素
-                    if(squid.isHidden(wrapper)) {
+                    if (squid.isHidden(wrapper)) {
                         wrapper.style.display = 'block'
                         hidden = true
                     }
                     max = wrapper.scrollHeight
-                    if(n.offsetTop > (max / 2)) {
-                        if(wrapper.clientHeight + wrapper.scrollTop === max) 
+                    if (n.offsetTop > (max / 2)) {
+                        if (wrapper.clientHeight + wrapper.scrollTop === max)
                             dir = 'up'
                         else
                             dir = 'down'
-                    }else{
-                        if(wrapper.scrollTop === min)
+                    } else {
+                        if (wrapper.scrollTop === min)
                             dir = 'down'
                         else
                             dir = 'up'
                     }
-                    this.inView(n, wrapper, dir) 
-                    if(hidden)
+                    this.inView(n, wrapper, dir)
+                    if (hidden)
                         wrapper.style.display = 'none'
                     this.activate(n)
                     break
                 }
-            } 
+            }
         },
-        activate: function(elem) {
+        activate: function (elem) {
             var tagName = (elem.tagName || '').toLowerCase(),
-                    className = elem.className,
-                    parent = elem.parentNode,
-                    first = parent.firstChild,
-                    last = parent.lastChild;
+                className = elem.className,
+                parent = elem.parentNode,
+                first = parent.firstChild,
+                last = parent.lastChild;
 
-            switch(tagName) {
+            switch (tagName) {
                 case 'li':
                     //li.select-option 元素
-                    if(!~className.indexOf('selected') && (elem !== first || elem !== last)) {
+                    if (!~className.indexOf('selected') && (elem !== first || elem !== last)) {
                         this.deactivate(elem)
                         elem.className = className + ' selected'
                     }
                     break
                 default:
                     break
-            } 
+            }
         },
-        deactivate: function(elem) {
-             var tagName = (elem.tagName || '').toLowerCase(),
-                 className = (' ' + elem.className + ' ').replace(/[\n\r\t]/, '');
+        deactivate: function (elem) {
+            var tagName = (elem.tagName || '').toLowerCase(),
+                className = (' ' + elem.className + ' ').replace(/[\n\r\t]/, '');
 
-            switch(tagName) {
+            switch (tagName) {
                 case 'li':
                     //li.select-option 元素
                     var i = 0,
@@ -335,8 +335,8 @@
                         length = lis.length,
                         cur;
 
-                    for(; i < length; i++) {
-                        cur = lis[i] 
+                    for (; i < length; i++) {
+                        cur = lis[i]
                         cur.className = squid.trim(className.replace(' selected ', ''))
                     }
                     break
@@ -344,67 +344,67 @@
                     break
             }
         },
-        fireSelected: function(elem, s) {
+        fireSelected: function (elem, s) {
             var text = elem.innerText || elem.textContent,
                 value = elem.getAttribute('data-value'),
                 r;
 
-            s.setAttribute('data-value', value) 
-            if(s.innerText) 
+            s.setAttribute('data-value', value)
+            if (s.innerText)
                 s.innerText = text
             else
                 s.textContent = text
 
             //触发系统select选中，用于form表单提交
             r = s.parentNode.previousSibling.previousSibling
-            r.value = value 
+            r.value = value
             r.setAttribute('data-text', text)
         },
-        closeSelect: function() {
+        closeSelect: function () {
             var elems = squid.getElementsByClassName('select-list'),
                 i = 0,
                 length = elems.length,
-                elem;  
+                elem;
 
-            for(; i < length; i++) {
-                elem = elems[i] 
-                if(squid.isVisible(elem))
+            for (; i < length; i++) {
+                elem = elems[i]
+                if (squid.isVisible(elem))
                     elem.style.display = 'none'
             }
         },
-        up: function(elem) {
-            var ul = elem.firstChild,
-                lis = ul.childNodes,
-                li = this.getSelectedIndex(lis),
-                cur,
-                i = li.index;
-            
-            if(i > 0) {
-                i-- 
-                cur = lis[i]
-                //判断元素是否in view
-                this.inView(cur, elem, 'up')
-                this.activate(cur) 
-                this.fireSelected(cur, elem.previousSibling.previousSibling) 
-            }
-        },
-        down: function(elem) {
+        up: function (elem) {
             var ul = elem.firstChild,
                 lis = ul.childNodes,
                 li = this.getSelectedIndex(lis),
                 cur,
                 i = li.index;
 
-            if(i < lis.length - 1) {
-                 i++ 
-                 cur = lis[i]
-                 //判断元素是否in view
-                 this.inView(cur, elem, 'down') 
-                 this.activate(cur)
-                 this.fireSelected(cur, elem.previousSibling.previousSibling)
-            } 
+            if (i > 0) {
+                i--
+                cur = lis[i]
+                //判断元素是否in view
+                this.inView(cur, elem, 'up')
+                this.activate(cur)
+                this.fireSelected(cur, elem.previousSibling.previousSibling)
+            }
         },
-        enter: function(elem) {
+        down: function (elem) {
+            var ul = elem.firstChild,
+                lis = ul.childNodes,
+                li = this.getSelectedIndex(lis),
+                cur,
+                i = li.index;
+
+            if (i < lis.length - 1) {
+                i++
+                cur = lis[i]
+                //判断元素是否in view
+                this.inView(cur, elem, 'down')
+                this.activate(cur)
+                this.fireSelected(cur, elem.previousSibling.previousSibling)
+            }
+        },
+        enter: function (elem) {
             var ul = elem.firstChild,
                 lis = ul.childNodes,
                 li,
@@ -413,21 +413,21 @@
 
             li = this.getSelectedIndex(lis)
             i = li.index
-            cur = lis[i] 
-            this.fireSelected(cur, elem.previousSibling.previousSibling) 
+            cur = lis[i]
+            this.fireSelected(cur, elem.previousSibling.previousSibling)
             this.closeSelect()
         },
-        getSelectedIndex: function(elems) {
+        getSelectedIndex: function (elems) {
             var i = 0,
                 length = elems.length,
                 elem;
-            
-            for(; i < length; i++) {
+
+            for (; i < length; i++) {
                 elem = elems[i]
-                if(~elem.className.indexOf('selected')) {
+                if (~elem.className.indexOf('selected')) {
                     return {
                         index: i
-                    } 
+                    }
                 }
             }
 
@@ -435,36 +435,36 @@
                 index: -1
             }
         },
-        inView: function(elem, wrapper, dir) {
+        inView: function (elem, wrapper, dir) {
             var scrollTop = wrapper.scrollTop,
                 offsetTop = elem.offsetTop,
                 top;
 
-            if(dir === 'up') {
-                if(offsetTop === 0) {
+            if (dir === 'up') {
+                if (offsetTop === 0) {
                     wrapper.scrollTop = offsetTop;
-                }else if(offsetTop < scrollTop) {
+                } else if (offsetTop < scrollTop) {
                     top = offsetTop - scrollTop
-                    this.scrollInView(wrapper, top) 
+                    this.scrollInView(wrapper, top)
                 }
-            }else{
+            } else {
                 var clientHeight = wrapper.clientHeight;
-                
-                if(offsetTop + elem.offsetHeight === wrapper.scrollHeight) {
-                    wrapper.scrollTop = wrapper.scrollHeight - wrapper.clientHeight 
-                }else if(offsetTop + elem.offsetHeight > clientHeight + scrollTop) {
+
+                if (offsetTop + elem.offsetHeight === wrapper.scrollHeight) {
+                    wrapper.scrollTop = wrapper.scrollHeight - wrapper.clientHeight
+                } else if (offsetTop + elem.offsetHeight > clientHeight + scrollTop) {
                     top = (offsetTop + elem.offsetHeight) - (scrollTop + clientHeight)
-                    this.scrollInView(wrapper, top) 
+                    this.scrollInView(wrapper, top)
                 }
             }
         },
-        scrollInView: function(elem, top) {
-            setTimeout(function() {
+        scrollInView: function (elem, top) {
+            setTimeout(function () {
                 elem.scrollTop += top
             }, 10)
         },
         doScrolling: false,
-        render: function(tmpl, data) {
+        render: function (tmpl, data) {
             var i = 0,
                 cur,
                 length = data.length,
@@ -473,21 +473,21 @@
                 item,
                 r = [];
 
-            for(; i < length; i++) {
-               cur = data[i]
-               item = tmpl.replace(/\{\{\w+\}\}/g, function(a) {
-                   prop = a.replace(/[\{\}]+/g, '')
-                   value = cur[prop] || ''
-                   if(prop === 'class') {
+            for (; i < length; i++) {
+                cur = data[i]
+                item = tmpl.replace(/\{\{\w+\}\}/g, function (a) {
+                    prop = a.replace(/[\{\}]+/g, '')
+                    value = cur[prop] || ''
+                    if (prop === 'class') {
                         value += 'select-option'
-                        if(cur.selected) {
-                            value += ' selected' 
+                        if (cur.selected) {
+                            value += ' selected'
                         }
-                   }
-                        
-                   return value
-               })
-               r.push(item)
+                    }
+
+                    return value
+                })
+                r.push(item)
             }
 
             return r.join('')
@@ -495,7 +495,7 @@
         tmpl: '<li class="{{class}}" data-value="{{value}}">{{text}}</li>'
     }
 
-    squid.swing.jselect = function() {
-        return new JSelect() 
+    squid.swing.jselect = function () {
+        return new JSelect()
     }
 })(squid);
