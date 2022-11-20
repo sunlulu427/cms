@@ -19,7 +19,10 @@ def create_app():
         import local
 
         app.config.from_object(local)
+    app.secret_key = "super secret key"
     db.init_app(app)
+    with app.app_context():
+        db.create_all()
     return app
 
 

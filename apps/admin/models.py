@@ -1,6 +1,7 @@
 # encoding:utf-8
 from exts import db
 from datetime import datetime
+from werkzeug.security import check_password_hash, generate_password_hash
 
 
 class Users(db.Model):
@@ -8,5 +9,21 @@ class Users(db.Model):
     uid = db.Column(db.Integer, primary_key=True, autoincrement=True)
     # gid = db.Column(db.Integer, nullable=False)
     username = db.Column(db.String(50), nullable=False)
-    password = db.Column(db.String(100), nullable=False)
-    email = db.Columb(db.String(50), nullable=False, unique=True)
+    _password = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(50), nullable=False, unique=True)
+
+    def __init__(self, username, password, email):
+        self.username = username
+        self._password = password
+        self.email = email
+
+    @property
+    def password(self):
+        return self._password
+
+    @password.setter
+    def password(self, raw_password):
+        self._password = raw_password
+
+    def check_password(self, raw_password):
+        return self.password == raw_password

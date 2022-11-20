@@ -10,3 +10,4 @@ Flask-SQLAlchemy==3.0.2
 PyMySQL==1.0.2
 Flask-Script==2.0.6
 Flask-Migrate==4.0.0
+WTForms==3.0.1
