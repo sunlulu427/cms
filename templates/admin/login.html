@@ -48,16 +48,31 @@
             </div>
             <div class="row cl">
                 <div class="formControls col-xs-8 col-xs-offset-3">
-                    <input class="input-text size-L" type="text" placeholder="验证码"
-                           onblur="if(this.value==''){this.value='验证码:'}"
-                           onclick="if(this.value=='验证码:'){this.value='';}" value="验证码:" style="width:150px;">
-                    <img src=""> <a id="kanbuq" href="javascript:;">看不清，换一张</a></div>
+                    <input class="input-text size-L" name="captcha" type="text" placeholder="验证码"
+                           onblur="if(this.value===''){this.value='验证码:'}"
+                           onclick="if(this.value==='验证码:'){this.value='';}" value="验证码:" style="width:150px;">
+                    <img id="code" src="{{ url_for('admin.get_code') }}" onclick="ajax1()">
+                </div>
+                <script type="text/javascript" src="{{ url_for('static', filename='lib/jquery/1.9.1/jquery.min.js') }}"></script>
+                <script type="text/javascript" src="/static/h-ui/js/H-ui.min.js"></script>
+                <script>
+                    function ajax1() {
+                        const xhr = new XMLHttpRequest();
+                        xhr.open('GET', '{{ url_for('admin.get_code') }}', true);
+                        xhr.onreadystatechange = function () {
+                            if (xhr.readyState === 4) {
+                                console.log(xhr.responseText)
+                                $('#code').attr('src', '{{ url_for('admin.get_code') }}?)' + Math.random())
+                            }
+                        }
+                    }
+                </script>
             </div>
             <div class="row cl">
                 <div class="formControls col-xs-8 col-xs-offset-3">
                     <label for="online">
-                        <input type="checkbox" name="online" id="online" value="">
-                        使我保持登录状态</label>
+                        <input type="checkbox" name="online" id="online" value="1">
+                        记住密码</label>
                 </div>
             </div>
             <div class="row cl">
@@ -76,6 +91,6 @@
 </div>
 <div class="footer" style="font-size: 16px;">@Copyright 视频架构直播客户端-LiveCore v1.1</div>
 <script type="text/javascript" src="{{ url_for('static', filename='lib/jquery/1.9.1/jquery.min.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='h-ui/js/H-ui.min.js') }}"></script>
+<script type="text/javascript" src="/static/h-ui/js/H-ui.min.js"></script>
 </body>
 </html>
