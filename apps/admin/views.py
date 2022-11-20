@@ -6,6 +6,7 @@ from .models import Users
 from .forms import LoginForm
 from utils.captcha import create_validate_code
 from datetime import timedelta
+from .decorators import login_required
 
 bp = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -49,6 +50,12 @@ def login():
 def index():
     # return render_template('admin/index.html')
     return '后台管理首页'
+
+
+@bp.route('/test/')
+@login_required
+def test():
+    return 'test index'
 
 
 @bp.route('/code/')
